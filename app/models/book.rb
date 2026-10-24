@@ -3,19 +3,19 @@
 class Book < ApplicationRecord
   include Borrowable
 
-  before_validation :generate_uuid, on: :create
+  before_validation :generate_serial_number, on: :create
 
-  validates :uuid, :title, :author1_first_name, :author1_last_name, presence: true
-  validates :uuid, uniqueness: true
+  validates :serial_number, :title, :author1_first_name, :author1_last_name, presence: true
+  validates :serial_number, uniqueness: true
 
   private
 
-  def generate_uuid
-    return if uuid.present?
+  def generate_serial_number
+    return if serial_number.present?
 
-    self.uuid = loop do
+    self.serial_number = loop do
       candidate = format("%06d", SecureRandom.random_number(1_000_000))
-      break candidate unless Book.exists?(uuid: candidate)
+      break candidate unless Book.exists?(serial_number: candidate)
     end
   end
 end

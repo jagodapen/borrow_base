@@ -1,7 +1,7 @@
 class CreateBooks < ActiveRecord::Migration[8.1]
   def change
     create_table :books do |t|
-      t.string :uuid, null: false
+      t.string :serial_number, null: false
       t.string :title, null: false
       t.string :author1_first_name, null: false
       t.string :author1_last_name, null: false
@@ -11,6 +11,6 @@ class CreateBooks < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :books, :uuid, unique: true
+    add_index :books, :serial_number, unique: true
   end
 end

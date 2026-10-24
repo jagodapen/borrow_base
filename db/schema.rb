@@ -15,7 +15,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_160000) do
   enable_extension "pg_catalog.plpgsql"
 
   create_table "books", force: :cascade do |t|
-    t.string "uuid", null: false
+    t.string "serial_number", null: false
     t.string "title", null: false
     t.string "author1_first_name", null: false
     t.string "author1_last_name", null: false
@@ -23,7 +23,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_160000) do
     t.string "author2_last_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["uuid"], name: "index_books_on_uuid", unique: true
+    t.index ["serial_number"], name: "index_books_on_serial_number", unique: true
   end
 
   create_table "borrowings", force: :cascade do |t|
