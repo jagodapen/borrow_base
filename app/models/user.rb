@@ -7,7 +7,7 @@ class User < ApplicationRecord
 
   # Associations
   has_many :borrowings, dependent: :destroy
-  has_many :borrowed_books, through: :borrowings, source: :item, source_type: "Book"
+  has_many :borrowed_items, through: :borrowings, source: :item
 
   # Validations
   validates :first_name, :last_name, :email, :card_number, presence: true

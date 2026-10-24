@@ -75,11 +75,11 @@ RSpec.describe User, type: :model do
       expect(user.borrowings).to contain_exactly(borrowing)
     end
 
-    it "returns books borrowed by the user" do
+    it "returns items borrowed by the user" do
       create(:borrowing, user:, item: book)
       create(:borrowing)
 
-      expect(user.borrowed_books).to contain_exactly(book)
+      expect(user.borrowed_items).to contain_exactly(book)
     end
 
     it "destroys borrowings when the user is destroyed" do

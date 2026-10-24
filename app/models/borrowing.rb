@@ -5,7 +5,7 @@ class Borrowing < ApplicationRecord
 
   # Associations
   belongs_to :user
-  belongs_to :item, polymorphic: true
+  belongs_to :item
 
   # Validations
   validates :borrow_date, :due_date, presence: true
@@ -43,6 +43,6 @@ class Borrowing < ApplicationRecord
 
   def references_unchanged
     errors.add(:user, :immutable) if user_id_changed?
-    errors.add(:item, :immutable) if item_id_changed? || item_type_changed?
+    errors.add(:item, :immutable) if item_id_changed?
   end
 end

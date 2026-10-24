@@ -24,12 +24,23 @@ RSpec.describe Borrowing, type: :model do
       expect(borrowing.errors[:item]).to include("must exist")
     end
 
-    it "belongs to a polymorphic item" do
+    it "belongs to an item" do
       book = create(:book)
       borrowing = create(:borrowing, item: book)
 
       expect(borrowing.reload.item).to eq(book)
-      expect(borrowing.item_type).to eq("Book")
+    end
+
+    it "is invalid when the item does not exist" do
+      borrowing.item_id = Item.maximum(:id).to_i + 1
+      expect(borrowing).not_to be_valid
+      expect(borrowing.errors[:item]).to include("must exist")
+    end
+
+    it "rejects a non-existent item at the database level" do
+      borrowing.save!
+      expect { borrowing.update_columns(item_id: Item.maximum(:id) + 1) }
+        .to raise_error(ActiveRecord::InvalidForeignKey)
     end
   end
 
@@ -159,11 +170,6 @@ RSpec.describe Borrowing, type: :model do
       expect(borrowing).to be_valid
     end
 
-    it "is valid when an item of another type shares the same id" do
-      create(:borrowing, item: book).update_columns(item_type: "Other")
-      expect(borrowing).to be_valid
-    end
-
     it "does not block updating the active borrowing itself" do
       active = create(:borrowing, item: book)
       expect(active.update(return_date: Date.current)).to be(true)
@@ -195,11 +201,6 @@ RSpec.describe Borrowing, type: :model do
       book.borrowings.first.update!(return_date: Date.current)
       expect { create(:borrowing, item: book) }.not_to raise_error
     end
-
-    it "allows an active borrowing of an item of another type with the same id" do
-      expect { insert_borrowing(item_type: "Other") }
-        .not_to raise_error
-    end
   end
 
   describe "reference immutability" do
@@ -211,14 +212,8 @@ RSpec.describe Borrowing, type: :model do
       expect(borrowing.errors[:user]).to include("cannot be changed")
     end
 
-    it "is invalid when item is changed to another item of the same type" do
+    it "is invalid when item is changed to another item" do
       borrowing.item = create(:book)
-      expect(borrowing).not_to be_valid
-      expect(borrowing.errors[:item]).to include("cannot be changed")
-    end
-
-    it "is invalid when only item_type is changed" do
-      borrowing.item_type = "User"
       expect(borrowing).not_to be_valid
       expect(borrowing.errors[:item]).to include("cannot be changed")
     end
@@ -235,7 +230,7 @@ RSpec.describe Borrowing, type: :model do
 
     it "is valid when references are reassigned to the same records" do
       borrowing.user = User.find(borrowing.user_id)
-      borrowing.item = Book.find(borrowing.item_id)
+      borrowing.item = Item.find(borrowing.item_id)
       expect(borrowing).to be_valid
     end
 

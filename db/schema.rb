@@ -14,21 +14,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "books", force: :cascade do |t|
-    t.string "serial_number", null: false
-    t.string "title", null: false
-    t.string "author1_first_name", null: false
-    t.string "author1_last_name", null: false
-    t.string "author2_first_name"
-    t.string "author2_last_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["serial_number"], name: "index_books_on_serial_number", unique: true
-  end
-
   create_table "borrowings", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "item_type", null: false
     t.bigint "item_id", null: false
     t.date "borrow_date", null: false
     t.date "due_date", null: false
@@ -36,9 +23,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_160000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["due_date"], name: "index_borrowings_on_due_date"
-    t.index ["item_type", "item_id"], name: "index_borrowings_on_active_item", unique: true, where: "(return_date IS NULL)"
-    t.index ["item_type", "item_id"], name: "index_borrowings_on_item"
+    t.index ["item_id"], name: "index_borrowings_on_active_item", unique: true, where: "(return_date IS NULL)"
+    t.index ["item_id"], name: "index_borrowings_on_item_id"
     t.index ["user_id"], name: "index_borrowings_on_user_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.string "type", null: false
+    t.string "serial_number", null: false
+    t.string "title"
+    t.string "author1_first_name"
+    t.string "author1_last_name"
+    t.string "author2_first_name"
+    t.string "author2_last_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["serial_number"], name: "index_items_on_serial_number", unique: true
+    t.index ["type"], name: "index_items_on_type"
   end
 
   create_table "users", force: :cascade do |t|
@@ -52,5 +53,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_160000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "borrowings", "items"
   add_foreign_key "borrowings", "users"
 end

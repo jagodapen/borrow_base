@@ -9,7 +9,7 @@ BORROWINGS_COUNT = 200
 ACTIVE_BORROWING_RATIO = 0.4
 
 Borrowing.delete_all
-Book.delete_all
+Item.delete_all
 User.delete_all
 
 Faker::UniqueGenerator.clear
