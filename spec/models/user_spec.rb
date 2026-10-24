@@ -63,4 +63,28 @@ RSpec.describe User, type: :model do
       expect(user).to be_valid
     end
   end
+
+  describe "borrowings" do
+    let(:user) { create(:user) }
+    let(:book) { create(:book) }
+
+    it "returns the user's borrowings" do
+      borrowing = create(:borrowing, user:)
+      create(:borrowing)
+
+      expect(user.borrowings).to contain_exactly(borrowing)
+    end
+
+    it "returns books borrowed by the user" do
+      create(:borrowing, user:, item: book)
+      create(:borrowing)
+
+      expect(user.borrowed_books).to contain_exactly(book)
+    end
+
+    it "destroys borrowings when the user is destroyed" do
+      create(:borrowing, user:)
+      expect { user.destroy }.to change(Borrowing, :count).by(-1)
+    end
+  end
 end

@@ -5,6 +5,10 @@ class User < ApplicationRecord
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 
+  # Associations
+  has_many :borrowings, dependent: :destroy
+  has_many :borrowed_books, through: :borrowings, source: :item, source_type: "Book"
+
   # Validations
   validates :first_name, :last_name, :email, :card_number, presence: true
   validates :email, format: { with: EMAIL_REGEX }, allow_blank: true

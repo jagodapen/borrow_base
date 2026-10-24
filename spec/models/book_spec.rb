@@ -7,6 +7,10 @@ RSpec.describe Book, type: :model do
 
   it { is_expected.to be_valid }
 
+  it "includes the Borrowable concern" do
+    expect(Book.include?(Borrowable)).to be(true)
+  end
+
   %i[title author1_first_name author1_last_name].each do |attr|
     it "is invalid without #{attr}" do
       book[attr] = nil

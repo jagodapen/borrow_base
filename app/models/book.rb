@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Book < ApplicationRecord
+  include Borrowable
+
   before_validation :generate_uuid, on: :create
 
   validates :uuid, :title, :author1_first_name, :author1_last_name, presence: true
