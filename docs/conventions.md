@@ -131,31 +131,21 @@ They are the only layer allowed to call view helpers or format data for HTML.
 ```ruby
 # frozen_string_literal: true
 
-class ProjectPresenter
-  def initialize(project)
-    @project = project
-  end
-
+class ProjectPresenter < ApplicationPresenter
   def budget_formatted
-    ActionController::Base.helpers.number_to_currency(@project.budget, unit: "€")
+    ActionController::Base.helpers.number_to_currency(budget, unit: "€")
   end
 
   def founded_year
-    @project.founded_on&.year
-  end
-
-  def method_missing(method, ...)
-    @project.public_send(method, ...)
-  end
-
-  def respond_to_missing?(method, include_private = false)
-    @project.respond_to?(method, include_private) || super
+    founded_on&.year
   end
 end
 ```
 
 - One presenter per model.
-- Use `method_missing` + `respond_to_missing?` to delegate plain attribute access to the model.
+- Inherit from `ApplicationPresenter` (a `SimpleDelegator`): any method not defined on the presenter is delegated to the wrapped model. Do not hand-roll `method_missing` / `respond_to_missing?`.
+- If a presenter needs extra options, call `super(model)` in `initialize` before setting its own ivars. Use `__getobj__` only when the model object itself is required.
+- `ApplicationPresenter#to_json` routes through the presenter's `as_json`, so `render json: SomePresenter.new(record)` serializes the presenter, not the raw model.
 - Never call presenters from models or services.
 
 ### Form Objects

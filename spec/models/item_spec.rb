@@ -88,6 +88,31 @@ RSpec.describe Item, type: :model do
     end
   end
 
+  describe "#active_borrowing" do
+    let(:item) { create(:book) }
+
+    it "is nil when the item has never been borrowed" do
+      expect(item.active_borrowing).to be_nil
+    end
+
+    it "returns the unreturned borrowing" do
+      create(:borrowing, item:, borrow_date: Date.current - 20.days, return_date: Date.current - 10.days)
+      active = create(:borrowing, item:)
+
+      expect(item.active_borrowing).to eq(active)
+    end
+
+    it "is nil when all borrowings are returned" do
+      create(:borrowing, item:, return_date: Date.current)
+      expect(item.active_borrowing).to be_nil
+    end
+
+    it "ignores active borrowings of other items" do
+      create(:borrowing)
+      expect(item.active_borrowing).to be_nil
+    end
+  end
+
   describe "#borrowers" do
     let(:item) { create(:book) }
     let(:user) { create(:user) }

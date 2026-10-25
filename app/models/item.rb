@@ -3,6 +3,7 @@
 class Item < ApplicationRecord
   # Associations
   has_many :borrowings, dependent: :destroy
+  has_one :active_borrowing, -> { active }, class_name: "Borrowing", inverse_of: :item
   has_many :borrowers, through: :borrowings, source: :user
 
   # Validations
