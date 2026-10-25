@@ -7,7 +7,7 @@ module Api
     def create
       borrowing = BorrowService.call(user_id: borrowing_params[:user_id], item_id: borrowing_params[:item_id])
       if borrowing.errors.empty?
-        render json: BorrowingPresenter.new(borrowing), status: :created
+        render json: { status: "successfully borrowed", borrowing: BorrowingPresenter.new(borrowing) }, status: :created
       else
         render_errors(borrowing)
       end
@@ -21,9 +21,9 @@ module Api
     def return
       borrowing = ReturnService.call(@borrowing)
       if borrowing.errors.empty?
-        render json: BorrowingPresenter.new(borrowing)
+        render json: { status: "successfully returned", borrowing: BorrowingPresenter.new(borrowing) }
       else
-        render_errors(borrowing)
+        render_errors(borrowing, status: "not returned")
       end
     end
 

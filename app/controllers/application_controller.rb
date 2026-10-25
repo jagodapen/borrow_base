@@ -9,7 +9,8 @@ class ApplicationController < ActionController::API
     render json: { error: "Not found" }, status: :not_found
   end
 
-  def render_errors(record)
-    render json: { errors: record.errors.to_hash(true) }, status: :unprocessable_content
+  def render_errors(record, status: "not created")
+    render json: { status:, error: "unprocessable content", error_message: record.errors.full_messages.to_sentence },
+           status: :unprocessable_content
   end
 end

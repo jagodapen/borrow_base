@@ -76,8 +76,9 @@ RSpec.describe "Api::Books", type: :request do
       expect { post api_books_path, params: }.to change(Book, :count).by(1)
 
       expect(response).to have_http_status(:created)
-      expect(json).to include("title" => "Refactoring", "status" => "available")
-      expect(json["serial_number"]).to match(/\A\d{6}\z/)
+      expect(json["status"]).to eq("success")
+      expect(json["book"]).to include("title" => "Refactoring", "status" => "available")
+      expect(json["book"]["serial_number"]).to match(/\A\d{6}\z/)
     end
 
     it "accepts a second author" do
@@ -103,7 +104,11 @@ RSpec.describe "Api::Books", type: :request do
       expect { post api_books_path, params: }.not_to change(Book, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(json["errors"]).to eq("title" => [ "Title can't be blank" ])
+      expect(json).to eq(
+        "status" => "not created",
+        "error" => "unprocessable content",
+        "error_message" => "Title can't be blank"
+      )
     end
 
     it "returns bad request when the book key is missing" do

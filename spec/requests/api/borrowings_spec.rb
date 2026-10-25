@@ -14,7 +14,8 @@ RSpec.describe "Api::Borrowings", type: :request do
       expect { post api_borrowings_path, params: }.to change(Borrowing, :count).by(1)
 
       expect(response).to have_http_status(:created)
-      expect(json).to include(
+      expect(json["status"]).to eq("successfully borrowed")
+      expect(json["borrowing"]).to include(
         "item_id" => book.id, "user_id" => user.id,
         "borrow_date" => Date.current.iso8601,
         "due_date" => (Date.current + Borrowing::BORROW_TIME_LIMIT).iso8601,
@@ -59,7 +60,7 @@ RSpec.describe "Api::Borrowings", type: :request do
       expect { post api_borrowings_path, params: }.not_to change(Borrowing, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(json["errors"]).to eq("item" => [ "Item is already borrowed" ])
+      expect(json["error_message"]).to eq("Item is already borrowed")
     end
 
     it "returns errors when the book is already borrowed by the same user" do
@@ -67,7 +68,7 @@ RSpec.describe "Api::Borrowings", type: :request do
 
       post(api_borrowings_path, params:)
 
-      expect(json["errors"]).to eq("item" => [ "Item is already borrowed" ])
+      expect(json["error_message"]).to eq("Item is already borrowed")
     end
 
     it "returns errors when the item does not exist" do
@@ -76,7 +77,7 @@ RSpec.describe "Api::Borrowings", type: :request do
       expect { post api_borrowings_path, params: }.not_to change(Borrowing, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(json["errors"]).to eq("item" => [ "Item must exist" ])
+      expect(json["error_message"]).to eq("Item must exist")
     end
 
     it "returns errors when the user does not exist" do
@@ -85,7 +86,7 @@ RSpec.describe "Api::Borrowings", type: :request do
       expect { post api_borrowings_path, params: }.not_to change(Borrowing, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(json["errors"]).to eq("user" => [ "User must exist" ])
+      expect(json["error_message"]).to eq("User must exist")
     end
 
     it "returns errors when the user id is missing" do
@@ -94,7 +95,7 @@ RSpec.describe "Api::Borrowings", type: :request do
       post(api_borrowings_path, params:)
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(json["errors"]).to eq("user" => [ "User must exist" ])
+      expect(json["error_message"]).to eq("User must exist")
     end
 
     it "ignores an item_type passed by the client" do
@@ -126,7 +127,8 @@ RSpec.describe "Api::Borrowings", type: :request do
       patch return_api_borrowing_path(borrowing)
 
       expect(response).to have_http_status(:ok)
-      expect(json).to include("id" => borrowing.id, "return_date" => Date.current.iso8601)
+      expect(json["status"]).to eq("successfully returned")
+      expect(json["borrowing"]).to include("id" => borrowing.id, "return_date" => Date.current.iso8601)
       expect(borrowing.reload.return_date).to eq(Date.current)
     end
 
@@ -168,7 +170,7 @@ RSpec.describe "Api::Borrowings", type: :request do
       patch return_api_borrowing_path(borrowing)
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(json["errors"]).to eq("base" => [ "Borrowing is already returned" ])
+      expect(json).to include("status" => "not returned", "error_message" => "Borrowing is already returned")
       expect(borrowing.reload.return_date).to eq(Date.current - 1.day)
     end
 
