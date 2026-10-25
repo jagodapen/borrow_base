@@ -214,3 +214,21 @@ curl -X PATCH http://localhost:3000/api/borrowings/3/return
 
 Returns `200 OK` with the borrowing, its `return_date` set to today.
 Returning a borrowing a second time returns `422` with `{"errors": {"base": ["Borrowing is already returned"]}}`.
+
+## Email previews
+
+Reminder emails are never actually sent. Open them in a browser instead (development only):
+
+| Preview                          | URL                                                                          |
+|----------------------------------|------------------------------------------------------------------------------|
+| All previews                     | http://localhost:3000/rails/mailers                                          |
+| `BorrowingMailer` previews       | http://localhost:3000/rails/mailers/borrowing_mailer                         |
+| Reminder 3 days before due date  | http://localhost:3000/rails/mailers/borrowing_mailer/return_reminder_in_3_days |
+| Reminder on the due date         | http://localhost:3000/rails/mailers/borrowing_mailer/return_reminder_due_today |
+
+The previews are defined in `spec/mailers/previews/borrowing_mailer_preview.rb` and use sample data.
+Reminders sent by `ReturnDateReminderJob` also log their payload (`Email payload: {...}`):
+
+```bash
+docker compose logs web | grep "Email payload"
+```
