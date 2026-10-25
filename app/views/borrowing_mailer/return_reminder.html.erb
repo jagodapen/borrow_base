@@ -1,0 +1,3 @@
+<p><%= t(".greeting", name: @reminder[:first_name]) %></p>
+<p><%= t(".body", count: @reminder[:days_left], title: @reminder[:title], due_date: l(@reminder[:due_date], format: :long)) %></p>
+<p><%= t(".closing") %></p>

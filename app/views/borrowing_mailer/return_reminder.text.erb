@@ -1,0 +1,5 @@
+<%= t(".greeting", name: @reminder[:first_name]) %>
+
+<%= t(".body", count: @reminder[:days_left], title: @reminder[:title], due_date: l(@reminder[:due_date], format: :long)) %>
+
+<%= t(".closing") %>

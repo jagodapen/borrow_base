@@ -21,8 +21,15 @@ default: &default
 
 
 development:
-  <<: *default
-  database: borrow_base_development
+  primary:
+    <<: *default
+    database: borrow_base_development
+  queue:
+    <<: *default
+    # DATABASE_URL is only merged into the primary config, so pass it on explicitly
+    url: <%= ENV["DATABASE_URL"] %>
+    database: borrow_base_development_queue
+    migrations_paths: db/queue_migrate
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.

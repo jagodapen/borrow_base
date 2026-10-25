@@ -32,6 +32,9 @@ Rails.application.configure do
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 
+  # No real email is sent: payloads are logged (see BorrowingMailer) and shown in mailer previews.
+  config.action_mailer.perform_deliveries = false
+
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
@@ -49,6 +52,10 @@ Rails.application.configure do
 
   # Append comments with runtime information tags to SQL queries in logs.
   config.active_record.query_log_tags_enabled = true
+
+  # Run jobs and recurring tasks (config/recurring.yml) with Solid Queue, as in production.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true

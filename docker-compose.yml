@@ -21,6 +21,8 @@ services:
     command: sh -c "rm -f tmp/pids/server.pid && bin/rails db:prepare && bin/rails db:seed && bin/rails server -b 0.0.0.0"
     environment:
       RAILS_ENV: development
+      # Run the Solid Queue supervisor (jobs + recurring tasks) inside Puma
+      SOLID_QUEUE_IN_PUMA: "true"
       DATABASE_URL: postgres://postgres:postgres@db:5432
     ports:
       - "3000:3000"

@@ -43,3 +43,15 @@ en:
             item:
               already_borrowed: "is already borrowed"
               immutable: "cannot be changed"
+  borrowing_mailer:
+    return_reminder:
+      subject:
+        zero: "Reminder: \"%{title}\" is due today"
+        one: "Reminder: \"%{title}\" is due tomorrow"
+        other: "Reminder: \"%{title}\" is due in %{count} days"
+      greeting: "Hello %{name},"
+      body:
+        zero: "The return period for \"%{title}\" ends today (%{due_date}). Please return it today."
+        one: "The return period for \"%{title}\" ends tomorrow (%{due_date}). Please return it on time."
+        other: "The return period for \"%{title}\" ends in %{count} days (%{due_date}). Please return it on time."
+      closing: "Thank you, BorrowBase"

@@ -10,8 +10,10 @@ Staff can use it to:
 
 The borrow period is **30 days**: the due date is set automatically when a book is borrowed.
 
-> **Planned:** email reminders sent to borrowers 3 days before the due date and on the due date.
-> They will be preview-only: the payload is logged and shown in the mailer preview, and no real email is sent.
+Borrowers get an email reminder 3 days before the due date and on the due date. `ReturnDateReminderJob`
+runs every day at 10am (Solid Queue recurring task, `config/recurring.yml`). Reminders are preview-only:
+no real email is sent, the payload is logged (`Email payload: {...}` in the log) and can be viewed at
+http://localhost:3000/rails/mailers/borrowing_mailer.
 
 ## Tech stack
 
