@@ -29,27 +29,24 @@ RSpec.describe BookPresenter do
       expect(described_class.new(book.reload).active_borrowing).to eq(borrowing)
     end
 
-    context "with preloaded borrowings" do
-      it "finds the unreturned borrowing without querying the association" do
+    context "with preloaded associations" do
+      it "uses the preloaded active borrowing without querying" do
         create(:borrowing, item: book, borrow_date: Date.current - 40, return_date: Date.current - 20)
         active = create(:borrowing, item: book)
-        presenter = described_class.new(book.reload, borrowings: book.borrowings.to_a)
+        preloaded = Book.includes(:borrowings, :active_borrowing).find(book.id)
+        presenter = described_class.new(preloaded)
 
+        expect(preloaded.association(:active_borrowing)).to be_loaded
         expect(presenter.active_borrowing).to eq(active)
         expect(presenter.status).to eq("borrowed")
-        expect(book.association(:active_borrowing)).not_to be_loaded
       end
 
-      it "is nil when all given borrowings are returned" do
+      it "is nil when all borrowings are returned" do
         create(:borrowing, item: book, return_date: Date.current)
-        presenter = described_class.new(book.reload, borrowings: book.borrowings.to_a)
+        presenter = described_class.new(Book.includes(:borrowings, :active_borrowing).find(book.id))
 
         expect(presenter.active_borrowing).to be_nil
         expect(presenter.as_json).to include(status: "available", due_date: nil)
-      end
-
-      it "is nil for an empty list" do
-        expect(described_class.new(book, borrowings: []).status).to eq("available")
       end
     end
   end

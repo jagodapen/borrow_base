@@ -4,18 +4,6 @@ class BookPresenter < ApplicationPresenter
   STATUS_AVAILABLE = "available"
   STATUS_BORROWED = "borrowed"
 
-  # Pass already-loaded borrowings to derive the active one without an extra query.
-  def initialize(book, borrowings: nil)
-    super(book)
-    @borrowings = borrowings
-  end
-
-  def active_borrowing
-    return __getobj__.active_borrowing if @borrowings.nil?
-
-    @borrowings.find { |borrowing| borrowing.return_date.nil? }
-  end
-
   def status
     active_borrowing ? STATUS_BORROWED : STATUS_AVAILABLE
   end

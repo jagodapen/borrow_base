@@ -6,9 +6,9 @@ module Api
       before_action :set_book, only: %i[index]
 
       def index
-        borrowings = @book.borrowings.includes(:user).order(borrow_date: :desc, id: :desc).to_a
+        borrowings = @book.borrowings.includes(:user).sort_by { |borrowing| [ borrowing.borrow_date, borrowing.id ] }.reverse
 
-        render json: BookPresenter.new(@book, borrowings:).as_json.merge(
+        render json: BookPresenter.new(@book).as_json.merge(
           borrowings: borrowings.map { |borrowing| BorrowingPresenter.new(borrowing, with_user: true) }
         )
       end
@@ -16,7 +16,7 @@ module Api
       private
 
       def set_book
-        @book = Book.find(params[:book_id])
+        @book = Book.includes(:active_borrowing, borrowings: :user).find(params[:book_id])
       end
     end
   end
