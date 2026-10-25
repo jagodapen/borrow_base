@@ -14,6 +14,29 @@ User.delete_all
 
 Faker::UniqueGenerator.clear
 
+# Demo records with fixed ids, referenced by the ready-to-copy examples in README.md.
+# Keep them in sync with the README when changing anything here.
+demo_jane = User.create!(id: 1, first_name: "Jane", last_name: "Doe", email: "jane.doe@borrowbase.test", card_number: "DEMO000001")
+demo_john = User.create!(id: 2, first_name: "John", last_name: "Smith", email: "john.smith@borrowbase.test", card_number: "DEMO000002")
+
+# Available, with one returned borrowing in its history
+demo_available = Book.create!(id: 1, serial_number: "900001", title: "The Pragmatic Programmer",
+                              author1_first_name: "Andrew", author1_last_name: "Hunt",
+                              author2_first_name: "David", author2_last_name: "Thomas")
+# Currently borrowed by Jane (active borrowing id 3)
+demo_borrowed = Book.create!(id: 2, serial_number: "900002", title: "Practical Object-Oriented Design in Ruby",
+                             author1_first_name: "Sandi", author1_last_name: "Metz")
+# Available, never borrowed — safe to delete
+Book.create!(id: 3, serial_number: "900003", title: "Eloquent Ruby",
+             author1_first_name: "Russ", author1_last_name: "Olsen")
+
+Borrowing.create!(id: 1, user: demo_john, item: demo_available, borrow_date: 60.days.ago.to_date, return_date: 40.days.ago.to_date)
+Borrowing.create!(id: 2, user: demo_jane, item: demo_borrowed, borrow_date: 70.days.ago.to_date, return_date: 45.days.ago.to_date)
+Borrowing.create!(id: 3, user: demo_jane, item: demo_borrowed, borrow_date: 10.days.ago.to_date)
+
+# Explicit ids don't advance the sequences, so move them past the demo records
+[ User, Item, Borrowing ].each { |model| ActiveRecord::Base.connection.reset_pk_sequence!(model.table_name) }
+
 users = Array.new(USERS_COUNT) do |i|
   User.create!(
     first_name: Faker::Name.first_name,
