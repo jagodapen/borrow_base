@@ -232,3 +232,7 @@ Reminders sent by `ReturnDateReminderJob` also log their payload (`Email payload
 ```bash
 docker compose logs web | grep "Email payload"
 ```
+
+## AI assistance
+
+This project and its documentation (README) were developed with the assistance of AI tools (Claude Code) used for brainstorming, code generation, and structuring the documentation.
